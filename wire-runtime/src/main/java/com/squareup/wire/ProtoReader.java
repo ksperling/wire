@@ -343,7 +343,6 @@ public final class ProtoReader {
     if (state != STATE_FIXED32 && state != STATE_LENGTH_DELIMITED) {
       throw new ProtocolException("Expected FIXED32 or LENGTH_DELIMITED but was " + state);
     }
-    source.require(4); // Throws EOFException if insufficient bytes are available.
     pos += 4;
     int result = source.readIntLe();
     afterPackableScalar(STATE_FIXED32);
@@ -355,7 +354,6 @@ public final class ProtoReader {
     if (state != STATE_FIXED64 && state != STATE_LENGTH_DELIMITED) {
       throw new ProtocolException("Expected FIXED64 or LENGTH_DELIMITED but was " + state);
     }
-    source.require(8); // Throws EOFException if insufficient bytes are available.
     pos += 8;
     long result = source.readLongLe();
     afterPackableScalar(STATE_FIXED64);
@@ -384,9 +382,8 @@ public final class ProtoReader {
       throw new ProtocolException("Expected LENGTH_DELIMITED but was " + state);
     }
     long byteCount = limit - pos;
-    source.require(byteCount); // Throws EOFException if insufficient bytes are available.
     state = STATE_TAG;
-    // We've completed a length-delimited scalar. Pop the limit.
+    // We will have completed a length-delimited scalar. Pop the limit.
     pos = limit;
     limit = pushedLimit;
     pushedLimit = -1;
